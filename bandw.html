@@ -1,13 +1,67 @@
 <head>
-  <title>bandw</title>
+  <title>B and W</title>
+  <!--<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script> -->
+  <script type="text/javascript">
+	var setValue = function(field) {
+		if(''!=field.defaultValue) {
+			if(field.value==field.defaultValue) {
+				field.value='';
+			}
+			else if(''==field.value) {
+				field.value=field.defaultValue;
+			}
+		}
+	}
+  </script>
 </head>
 
 <body>
-  {{> hello}}
+	{{> page}}	
+	
 </body>
-
-<template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
-  <input type="button" value="Click" />
+<template name="page">
+	{{> header}}
+	{{#if isLoggedIn }}
+		OH YEAH!
+	{{else}}
+		{{> splash}}
+	{{/if}}
+</template>
+<template name="header">
+  	<div id="welcome_header">
+		<img src="/logo.png" style="width:350px; height:90px;"/>
+	</div>
+</template>
+<template name="splash">
+	<div id="splash">
+		<img src="/welcome.jpg" style="width:1100px; height:500px;"/>
+		<div id="splash_text">
+			<p style=" color: #f0f0f0;font-size: 18px;
+			font-weight: bold;">
+			A picture is worth a thousand words.</p><p style=" color: #e0e0e0;font-size: 18px;
+			font-weight: normal;">Simply enter a username to get started.</p>
+			{{> signup_form}}
+			<div id="signup_error" style=" color: #f0f0f0;font-size: 14px; height:14px"></div>
+			
+		</div>
+		
+		<div id="login_area">
+			<p style=" color: #f0f0f0;font-size: 20px;
+			font-weight: bold;">Already signed up?</p> Login here.
+			{{> login_form}}
+			<div id="login_error" style=" color: White;font-size: 14px;"></div>
+		</div>
+					
+	</div>
+</template>
+<template name="signup_form">
+	<input type="text" id="newusername" value="Enter a username..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox">
+	<button type="button" id="createUser"  class="btn btn-primary" data-loading-text="Loading..." >Go</button>
+</template>
+<template name="login_form">
+	<input type="text" id="oldusername" value="Enter a username..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox">
+	<input type="password" id="oldpassword" value="Enter a password..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox">
+	<button type="button" id="loginUser" class="btn btn-primary" data-loading-text="Loading..." >Sign in</button>
 </template>

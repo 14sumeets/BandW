@@ -1,1 +1,40 @@
 /* CSS declarations go here */
+body {
+	background-color: #f0f0f0;
+	margin: 0;
+	font-family: Sans-serif;
+}
+
+#welcome_header {
+	width: 60%;
+	margin-left: auto ;
+    margin-right: auto ;
+	text-align: center;
+	font-size: 30px;
+}
+
+#splash {
+	width: 1100px;
+	margin-left: auto ;
+    margin-right: auto ;
+}
+#splash_text {
+	/*text-align: center;*/
+	width: 400px;
+	position: relative;
+	bottom:150px;
+	left: 400px;
+	
+}
+.inputbox {
+	bottom:-6px;
+	position: relative;
+}
+#login_area {
+	font-size: 16px;
+	width: 200px;
+	color: #f0f0f0;
+	bottom: 331px;
+	left: 820px;
+	position: relative;
+}
