@@ -1,20 +1,4 @@
 <head>
-  <title>B and W</title>
-  <!--<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
-  <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script> -->
-  <script type="text/javascript">
-	var setValue = function(field) {
-		if(''!=field.defaultValue) {
-			if(field.value==field.defaultValue) {
-				field.value='';
-			}
-			else if(''==field.value) {
-				field.value=field.defaultValue;
-			}
-		}
-	}
-  </script>
 </head>
 
 <body>
@@ -25,3 +9,113 @@
 	
 	
 </body>
+
+<template name="userhome">
+	{{> userhomeheader}}
+	<div class="belowheadercontainer">
+	{{> userhomeleftmenu}}
+	{{> rightofmenu }}
+	</div>
+</template>
+<template name="userhomeheader">
+	<div class="navbar navbar-fixed-top navbar-inverse">
+	  <div class="navbar-inner">
+	    <div class="container-fluid">
+	      <span class="brand">
+	        B and W
+	      </span>
+	      <form class="navbar-form pull-right">
+	        <button class="btn btn-primary">
+	          Sign out
+	        </button>
+	      </form>
+	    </div>
+	  </div>
+	</div>
+	
+</template>
+<template name="userhomeleftmenu">
+	
+	<div class="leftmenu">	
+		
+		<div class="well sidebar-nav">
+	        <ul class="nav nav-list">
+	          <li class="nav-header">
+	            Photo Actions
+	          </li>
+	          <li>
+	          </li>
+	          <li class="">
+	            <a href="#">
+	              New Album
+	            </a>
+	          </li>
+	          <li class="">
+	            <a href="#">
+	              See all Albums
+	            </a>
+	          </li>
+	        </ul>
+	
+	        <ul class="nav nav-list">
+	          <li class="nav-header">
+	            User Actions
+	          </li>
+	          <li>
+	          </li>
+	          <li class="">
+	            <a href="#">
+	              My Account
+	            </a>
+	          </li>
+	          <li class="">
+	            <a href="#">
+	              Inbox
+	            </a>
+	          </li>
+	          <li class="">
+	            <a href="#">
+	              Send a Message
+	            </a>
+	          </li>
+	          <li class="">
+	            <a href="#">
+	              Contacts
+	            </a>
+	          </li>
+	        </ul>
+	      </div>
+	</div>
+</template>
+<template name="rightofmenu">
+	
+	
+	<div class="rightofmenu">
+		<div class="hero-unit">
+	        <div>{{#if needtomakepw}}
+					{{> newlyregistered}}
+				  {{/if}}
+	          <h1>
+	            Welcome to B and W!
+	          </h1>
+	          <p>
+	            This is a template for a simple marketing or informational website. It
+	            includes a large callout called the hero unit and three supporting pieces
+	            of content. Use it as a starting point to create something more unique.
+	          </p>
+	        </div>
+	        <a class="btn btn-primary" href="#">
+	          Learn more »
+	        </a>
+		</div>
+	</div>
+</template>
+<template name="newlyregistered">
+	<div id="newlyregistered">
+		<h5>You should set a password below to allow your account to persist.</h5>
+		<input type="password" id="pw1" value="Enter a username..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox"><br>
+		<input type="password" id="pw2" value="Enter a password..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox"><br>
+		<button type="button" id="loginUser" class="btn btn-primary" data-loading-text="Loading..." >Set Password</button><h5><span id="setpwerror"></span></h5>
+		<hr>
+	</div>
+</template>

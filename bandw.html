@@ -22,10 +22,10 @@
 	
 </body>
 <template name="page">
-	{{> header}}
 	{{#if isLoggedIn }}
-		OH YEAH!
+		{{> userhome}}
 	{{else}}
+		{{> header}}
 		{{> splash}}
 	{{/if}}
 </template>

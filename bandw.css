@@ -38,3 +38,22 @@ body {
 	left: 820px;
 	position: relative;
 }
+.belowheadercontainer {
+	top: 60px;
+	position: relative;
+}
+.leftmenu {
+	width: 200px;
+	position: relative;
+	left: 30px;
+}
+.rightofmenu {
+	width: 800px;
+	left: 300px;
+	bottom: 268px;
+	position: relative;
+}
+.hero-unit {
+	background-color: whiteSmoke;
+	border: 1px solid #E3E3E3;
+}
