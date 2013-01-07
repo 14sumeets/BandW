@@ -48,12 +48,17 @@ body {
 	left: 30px;
 }
 .rightofmenu {
-	width: 800px;
+	width: 950px;
 	left: 300px;
-	bottom: 268px;
+	bottom: 294px;
+	overflow: hidden;
 	position: relative;
 }
 .hero-unit {
 	background-color: whiteSmoke;
 	border: 1px solid #E3E3E3;
 }
+#photoarea {
+	
+}
+img.center {   display: block;   margin-left: auto;   margin-right: auto; }

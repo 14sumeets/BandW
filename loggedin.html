@@ -14,7 +14,21 @@
 	{{> userhomeheader}}
 	<div class="belowheadercontainer">
 	{{> userhomeleftmenu}}
-	{{> rightofmenu }}
+	{{#if loggedInPageIs "welcomeuser"}}
+		{{> welcomeuser }}
+	{{/if}}
+	{{#if loggedInPageIs "newalbum"}}
+		{{> newalbum }}
+	{{/if}}
+	{{#if loggedInPageIs "seeall"}}
+		{{> seeall }}
+	{{/if}}
+	{{#if loggedInPageIs "viewalbum"}}
+		{{> viewalbum }}
+	{{/if}}
+	{{#if loggedInPageIs "viewphoto"}}
+		{{> viewphoto }}
+	{{/if}}
 	</div>
 </template>
 <template name="userhomeheader">
@@ -25,7 +39,7 @@
 	        B and W
 	      </span>
 	      <form class="navbar-form pull-right">
-	        <button class="btn btn-primary">
+	        <button class="btn btn-primary" id="logout">
 	          Sign out
 	        </button>
 	      </form>
@@ -45,12 +59,12 @@
 	          </li>
 	          <li>
 	          </li>
-	          <li class="">
+	          <li class="" id="newalbum">
 	            <a href="#">
 	              New Album
 	            </a>
 	          </li>
-	          <li class="">
+	          <li class="" id="seeall">
 	            <a href="#">
 	              See all Albums
 	            </a>
@@ -61,25 +75,28 @@
 	          <li class="nav-header">
 	            User Actions
 	          </li>
-	          <li>
+	          <li class="" id="home">
+		        <a href="#">
+	              Home
+	            </a>
 	          </li>
-	          <li class="">
+	          <li class="" id="myaccount">
 	            <a href="#">
 	              My Account
 	            </a>
 	          </li>
-	          <li class="">
+	          <li class="" id="inbox">
 	            <a href="#">
 	              Inbox
 	            </a>
 	          </li>
 	          <li class="">
-	            <a href="#">
+	            <a href="#" id="sendmessage">
 	              Send a Message
 	            </a>
 	          </li>
 	          <li class="">
-	            <a href="#">
+	            <a href="#" id="contacts">
 	              Contacts
 	            </a>
 	          </li>
@@ -87,9 +104,25 @@
 	      </div>
 	</div>
 </template>
-<template name="rightofmenu">
-	
-	
+
+<template name="newalbum">
+	<div class="rightofmenu">
+		<div class="hero-unit">
+	        <div>
+	          <h1>
+	            New Album
+	          </h1>
+	          <p>
+	            Pick a name for your new album!
+	          </p>
+				<input type="text" id="newalbumname" value="Enter an album name..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox"><br>
+				<button type="button" id="newalbumbutton" class="btn btn-primary" data-loading-text="Loading..." >Create</button><h5><span id="newalbumerror"></span></h5>
+	        </div>
+		</div>
+	</div>
+</template>
+
+<template name="welcomeuser">	
 	<div class="rightofmenu">
 		<div class="hero-unit">
 	        <div>{{#if needtomakepw}}
@@ -117,5 +150,64 @@
 		<input type="password" id="pw2" value="Enter a password..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox"><br>
 		<button type="button" id="loginUser" class="btn btn-primary" data-loading-text="Loading..." >Set Password</button><h5><span id="setpwerror"></span></h5>
 		<hr>
+	</div>
+</template>
+
+<template name="seeall">
+	<div class="rightofmenu">
+		<div class="hero-unit">
+	        <div>
+	          <h2>
+	            Your Albums <hr style="clear:both">
+	          </h2>
+				{{#each albums}}
+					<div style="float:left; padding-right:5px; text-align: center"><a href="#"><img id="{{_id}}" src="{{albumcover}}" width="250" height="250" /></a><br><h4>{{name}}</h4><span style="position: relative;bottom:14px;font-size:14px">{{numphotos}} photos</span></div>
+				{{/each}}
+				<span style="clear: left; display: block;"></span>
+	        </div>
+		</div>
+	</div>
+</template>
+
+
+<template name="viewalbum">
+	<div class="rightofmenu">
+		<div class="hero-unit">
+	        <div>
+	          <h2>
+	            Viewing Album: {{album.name}}</h2>Add a photo:<br><input type="text" id="newphotoURL" value="Enter a URL to a photo..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox">
+				<button type="button" id="newphoto" class="btn btn-primary" data-loading-text="Loading..." >Add</button><h5><span id="newalbumerror">
+	 			<hr style="clear:both">
+	          <br>
+				{{#each photosFrom album}}
+					<div style="float:left; padding: 4px"><a href="#"><img id="{{_id}}" class="photo" src="{{src}}" style="width: 190px; height:190px" /></a></div>
+				{{/each}}
+				<span style="clear: left; display: block;"></span>
+	        </div>
+		</div>
+	</div>	
+</template>
+
+<template name="viewphoto">
+	<div class="rightofmenu">
+		<div class="hero-unit">
+	        <div>
+	            <a class="btn btn-primary" href="#" id="returntoalbum">
+		          ≪ Back to album
+		        </a><br><br>
+		
+			<div id="photoarea">
+			  <img src="{{photo.src}}" /><br><h4>Comments</h4><hr>
+			  {{#each comments}}
+				<b>{{commentauthorname author_id}}</b>: {{text}} <br>
+			  {{/each}}
+			<br>
+			  	<input type="text" style="width: 300px" id="newcomment" value="Add a comment..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox">
+				<button type="button" id="newcommentbutton" class="btn btn-primary" data-loading-text="Loading..." >Post</button><h5><span id="newalbumerror">
+				
+			</div>
+				
+	        </div>
+		</div>
 	</div>
 </template>

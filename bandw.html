@@ -22,7 +22,7 @@
 	
 </body>
 <template name="page">
-	{{#if isLoggedIn }}
+	{{#if currentUser }}
 		{{> userhome}}
 	{{else}}
 		{{> header}}
