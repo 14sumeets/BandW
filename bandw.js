@@ -58,9 +58,41 @@ if (Meteor.isClient) {
 				$("#newcomment")[0].value = "Add a comment...";
 				$("#newcomment").blur();
 			}
+		},
+		'click a#makealbumcover' : function(e) {
+			e.preventDefault()
+			console.log("i was clicked!")
+			console.log("i was clasfasficked!")
+			$("#updatecover").show()
+			$("#updatecover").text("Updated!")
+			$("#updatecover").fadeOut(1500)
+			Albums.update({_id:Session.get('currentalbumid')},{$set: {albumcover : Photos.findOne({_id:Session.get('currentPhoto')}).src }}  )
 		}
 	});
 	
+	Template.sendmessage.events({
+		'click button' : function() {
+			var body = $("#messagebody").val();
+			var to = $("#messageto").val();
+			var recipient = Meteor.users.findOne({username: to })
+			if (recipient != undefined) {
+				$("#sendmessageerror").text("Successfully sent message!")
+				$("#messagebody").val("");
+				$("#messageto").val("");
+				Messages.insert({to_id: recipient._id, from_id: Meteor.user()._id, body:body, new:true})
+			} else {
+				$("#sendmessageerror").text("Error: Your specified recipient username was not found.")
+			}
+		}
+	});
+	Template.viewinbox.messages = function() {
+		return Messages.find({to_id: Meteor.userId()})
+	}
+	Template.viewinbox.from = function(id) {
+		return Meteor.users.findOne({_id: id}).username
+	}
+	Template.viewinbox.events({
+	});
 	
 	
 	
@@ -90,8 +122,14 @@ if (Meteor.isClient) {
 		'click li#home' : function() {
 			Session.set('loggedInPage','welcomeuser')
 		},
+		'click li#contacts' : function() {
+			Session.set('loggedInPage','viewcontacts')
+		},
 		'click li#inbox' : function () {
-			console.log("clicked on inbox");
+			Session.set('loggedInPage','viewinbox')
+		},
+		'click li#sendmessage' : function () {
+			Session.set('loggedInPage','sendmessage')
 		}
 	});
 	Template.newalbum.events({
@@ -195,7 +233,7 @@ if (Meteor.isServer) {
 	});
 
 
-	//Albums.remove({}); Comments.remove({}); Photos.remove({}); Meteor.users.remove({});
+	//Albums.remove({}); Comments.remove({}); Photos.remove({}); Meteor.users.remove({}); Messages.remove({});
 	//Meteor.users.find().forEach(function(o){ console.log(o)});
 	//console.log("DONE")
   });

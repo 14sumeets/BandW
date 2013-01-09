@@ -29,6 +29,15 @@
 	{{#if loggedInPageIs "viewphoto"}}
 		{{> viewphoto }}
 	{{/if}}
+	{{#if loggedInPageIs "viewcontacts"}}
+		{{> viewcontacts }}
+	{{/if}}
+	{{#if loggedInPageIs "viewinbox"}}
+		{{> viewinbox }}
+	{{/if}}
+	{{#if loggedInPageIs "sendmessage"}}
+		{{> sendmessage }}
+	{{/if}}
 	</div>
 </template>
 <template name="userhomeheader">
@@ -90,13 +99,13 @@
 	              Inbox
 	            </a>
 	          </li>
-	          <li class="">
-	            <a href="#" id="sendmessage">
-	              Send a Message
+	          <li class="" id="sendmessage">
+	            <a href="#">
+	              Send Message
 	            </a>
 	          </li>
-	          <li class="">
-	            <a href="#" id="contacts">
+	          <li class="" id="contacts">
+	            <a href="#">
 	              Contacts
 	            </a>
 	          </li>
@@ -194,10 +203,14 @@
 	        <div>
 	            <a class="btn btn-primary" href="#" id="returntoalbum">
 		          ≪ Back to album
-		        </a><br><br>
-		
+		        </a>
+		<br><br>
 			<div id="photoarea">
-			  <img src="{{photo.src}}" /><br><h4>Comments</h4><hr>
+			  <img style="padding-bottom:5px;"src="{{photo.src}}" /><br>
+			<a class="btn btn-primary" href="#" id="makealbumcover">
+		          Use photo as album cover
+		        </a><span style="position: absolute;"><span style="font-weight: bold; font-size: 12px; left:10px; position: relative;" id="updatecover"></span></span>    <br>
+			<h4>Comments</h4><hr>
 			  {{#each comments}}
 				<b>{{commentauthorname author_id}}</b>: {{text}} <br>
 			  {{/each}}
@@ -206,7 +219,49 @@
 				<button type="button" id="newcommentbutton" class="btn btn-primary" data-loading-text="Loading..." >Post</button><h5><span id="newalbumerror">
 				
 			</div>
+			
 				
+	        </div>
+		</div>
+	</div>
+</template>
+
+<template name="viewcontacts">
+	<div class="rightofmenu">
+		<div class="hero-unit">
+	        <div>
+			<h2>Contacts</h2><hr>
+			<ul>
+			{{#each contacts}}
+			<li>{{displayname}} ({{username}})
+			{{/each}}
+			</ul>	
+	        </div>
+		</div>
+	</div>
+</template>
+<template name="viewinbox">
+	<div class="rightofmenu">
+		<div class="hero-unit">
+	        <div class="inbox">
+			<h2>Inbox</h2><hr>
+			<ul>
+			{{#each messages}}
+			<li class="msg" i="{{_id}}"><b>{{from from_id}}: </b>{{body}}
+			{{/each}}
+			</ul>	
+	        </div>
+		</div>
+	</div>
+</template>
+<template name="sendmessage">
+	<div class="rightofmenu">
+		<div class="hero-unit">
+	        <div>
+			<h2>Compose New Message</h2><hr>
+			<h5>To:</h5> <textarea class="input-xlarge" id="messageto" rows="1" style="resize: none;"></textarea>	<br>
+			<h5>Message:</h5> <textarea class="input-xlarge" id="messagebody" rows="5"></textarea>	<br>
+			<button type="button" id="sendmessage" class="btn btn-primary" data-loading-text="Loading..." >Send</button><div style="font-weight: bold; font-size: 12px;"  id="sendmessageerror"></div>
 	        </div>
 		</div>
 	</div>
