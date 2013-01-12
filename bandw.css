@@ -65,3 +65,26 @@ img.center {   display: block;   margin-left: auto;   margin-right: auto; }
 .inbox {
 	font-size: 14px;
 }
+.notification {
+	border-bottom: 1px solid #E3E3E3;
+	height: 60px;
+	padding-top: 0px;
+	position: relative;
+}
+#notificationspanel {
+	left: -12px;
+	top:43px;
+	position:absolute;
+	z-index:1;
+	background-color: White;
+	padding-left:5px;
+	width:400px;
+	max-height:268px;
+	overflow:scroll;
+	-moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -khtml-border-radius: 6px;
+    border-radius: 6px;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 10px 0px;
+	color: Black;
+}

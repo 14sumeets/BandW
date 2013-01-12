@@ -47,6 +47,22 @@
 	      <span class="brand">
 	        B and W
 	      </span>
+		  <ul class="nav">
+			  <li class="{{newnotification}}dropdown" id="accountmenu">
+                  <a id="notificationsbutton"class="dropdown-toggle" data-toggle="dropdown" href="#">Notifications{{numnewnotifications}}<b class="caret"></b></a>
+				    <ul id="notificationspanel" style="display:{{notifications_panel_open}};">
+					 <span style="width:100px"></span>
+					 {{#each notifications}}
+					                      <div class="notification"><span style="position: relative; top:20px">{{text}}</span> {{#if iscontactrequest type}}<button style="position: absolute; bottom:15px; left:250px" type="button" id="{{_id}}" class="btn btn-primary {{#if accepted}}disabled {{/if}}accept" data-loading-text="Loading..." >{{#if accepted}}Accepted{{else}}Accept{{/if}}</button>{{/if}}  </div>
+					 {{/each}}
+					
+					
+					 </ul>             
+				
+              </li>
+			
+		   </ul>
+
 	      <form class="navbar-form pull-right">
 	        <button class="btn btn-primary" id="logout">
 	          Sign out
@@ -96,7 +112,7 @@
 	          </li>
 	          <li class="" id="inbox">
 	            <a href="#">
-	              Inbox
+	              Inbox {{newmsgs}}
 	            </a>
 	          </li>
 	          <li class="" id="sendmessage">
@@ -231,9 +247,11 @@
 		<div class="hero-unit">
 	        <div>
 			<h2>Contacts</h2><hr>
+			<h5>Add new contact:</h5><input type="text" id="newcontact" value="Enter a username..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox"><button type="button" id="newcontactbutton" class="btn btn-primary" data-loading-text="Loading..." >Send Contact Request</button><span id="newcontacterror" style="font-size:12px; font-weight:bold; left:4px; position:relative;"></span>
+			<hr>
 			<ul>
 			{{#each contacts}}
-			<li>{{displayname}} ({{username}})
+			<li><b>{{username}}</b>
 			{{/each}}
 			</ul>	
 	        </div>

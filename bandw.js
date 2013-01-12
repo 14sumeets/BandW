@@ -12,6 +12,77 @@ if (Meteor.isClient) {
 		}
 		return page == p;
 	}
+	//hide notifications window if user clicks outside the notifications window
+	$(document).on('click', function () {
+        Session.set('notificationspanel',undefined)
+    });
+	
+	Template.userhomeleftmenu.newmsgs = function() {
+		var numnew = Messages.find({to_id:Meteor.userId(), new:true}).fetch().length
+		if (numnew > 0) {
+			return "("+numnew+")"
+		}
+		return "";
+	}
+	Template.userhomeheader.numnewnotifications = function() {
+		var numnew = Notifications.find({owner_id:Meteor.userId(), new:true}).fetch().length
+		if (numnew > 0) {
+			return " ("+numnew+")"
+		}
+		return "";
+	}
+	Template.userhomeheader.newnotification = function() {
+		var numnew = Notifications.find({owner_id:Meteor.userId(), new:true}).fetch().length
+		if (numnew > 0 || Session.get('notificationspanel')=='open') {
+			return "active "
+		}
+		return "";
+	}
+	Template.userhomeheader.iscontactrequest = function(type) {
+		return type=="contact request"
+	}
+	Template.userhomeheader.notifications_panel_open = function() {
+		if (Session.get('notificationspanel') == undefined) {
+			return "none"
+		} else {
+			return "block"
+		}
+	}
+	Template.userhomeheader.notifications = function() {
+		var notifications = Notifications.find({owner_id: Meteor.userId()}).fetch().reverse()
+		if (notifications.length > 0) {
+			return notifications
+		}
+		return [{text: "You have no notifications to display."}]
+	}
+
+	Template.userhomeheader.events({
+		'click a#notificationsbutton': function() {
+			if (Session.get('notificationspanel')==undefined) {
+				Session.set('notificationspanel','open')
+				var numnew = Notifications.find({owner_id:Meteor.userId(),new:true}).fetch().length
+				for (var i=0;i<numnew;i++) {
+					Notifications.update({owner_id:Meteor.userId(), new:true},{$set: {new: false}})
+				}
+			} else{
+				Session.set('notificationspanel',undefined)
+			}
+		},
+		'click ul#notificationspanel':function(e) {
+			console.log(e.toElement.className)
+			e.stopPropagation();
+			if (e.toElement.className == "btn btn-primary accept") {
+				var n = Notifications.findOne({_id:e.toElement.id})
+				Notifications.update({_id:e.toElement.id},{$set: {accepted : true }}  )
+				Meteor.call('getUsernameOf',n.from_id,function(error,result) {
+					console.log("inserting")
+					console.log({owner_id: Meteor.userId(), username: result})
+					Contacts.insert({owner_id: Meteor.userId(), username: result});
+					Contacts.insert({owner_id: n.from_id, username: Meteor.user().username});
+				})
+			}
+		},
+	});
 	
 	Template.viewalbum.album = function() {
 		return Albums.findOne({_id: Session.get('currentalbumid')});
@@ -61,8 +132,6 @@ if (Meteor.isClient) {
 		},
 		'click a#makealbumcover' : function(e) {
 			e.preventDefault()
-			console.log("i was clicked!")
-			console.log("i was clasfasficked!")
 			$("#updatecover").show()
 			$("#updatecover").text("Updated!")
 			$("#updatecover").fadeOut(1500)
@@ -86,15 +155,48 @@ if (Meteor.isClient) {
 		}
 	});
 	Template.viewinbox.messages = function() {
-		return Messages.find({to_id: Meteor.userId()})
+		return Messages.find({to_id: Meteor.userId()}).fetch().reverse()
 	}
 	Template.viewinbox.from = function(id) {
-		return Meteor.users.findOne({_id: id}).username
+		return Meteor.users.findOne({_id: id}).profile.displayname
 	}
 	Template.viewinbox.events({
 	});
-	
-	
+	Template.viewcontacts.events({
+		'click button#newcontactbutton' : function() {
+			var newusername = $("#newcontact").val();
+			Meteor.call('lookUpUsername',newusername,function(error,newcontact) {//Meteor.users.findOne({username: newusername})
+				var sentAlready = Notifications.findOne({})
+				if (newcontact != undefined) {
+					var sentAlready = Notifications.findOne({owner_id: newcontact._id, type:"contact request",from_id:Meteor.userId() })
+					var acceptedAlready = Contacts.findOne({owner_id:Meteor.userId(),username:newusername})
+					if (sentAlready == undefined) {
+						if (acceptedAlready == undefined) {
+							Notifications.insert({owner_id: newcontact._id, type:"contact request",from_id:Meteor.userId(),new:true,accepted:false,text:Meteor.user().profile.displayname+" wants to add you as a contact." })
+							$("#newcontacterror").show()
+							$("#newcontacterror").text("Successfully sent contact request!")
+							$("#newcontacterror").fadeOut(2000)
+						} else {
+							$("#newcontacterror").show()
+							$("#newcontacterror").text("Error: This user is already a contact of yours.")
+							$("#newcontacterror").fadeOut(2000)
+						}
+					} else {
+						$("#newcontacterror").show()
+						$("#newcontacterror").text("Error: You have already sent a contact request to this user.")
+						$("#newcontacterror").fadeOut(2000)
+					}
+				} else {
+					$("#newcontacterror").show()
+					$("#newcontacterror").text("Error: The specified username does not exist.")
+					$("#newcontacterror").fadeOut(2000)
+				}
+			});
+		}
+	});
+	Template.viewcontacts.contacts = function() {
+		return Contacts.find({owner_id:Meteor.userId()})
+	}
 	
 	
 	
@@ -127,6 +229,10 @@ if (Meteor.isClient) {
 		},
 		'click li#inbox' : function () {
 			Session.set('loggedInPage','viewinbox')
+			var numnew = Messages.find({to_id:Meteor.userId(),new:true}).fetch().length
+			for (var i=0;i<numnew;i++) {
+				Messages.update({to_id:Meteor.userId(), new:true},{$set: {new: false}})
+			}
 		},
 		'click li#sendmessage' : function () {
 			Session.set('loggedInPage','sendmessage')
@@ -225,15 +331,20 @@ if (Meteor.isServer) {
 			if (Meteor.user() != null) {
 				Accounts.setPassword(Meteor.user()._id,pw);
 				Meteor.users.update({_id:Meteor.user()._id},{$set: {profile : {makepw:false, displayname: Meteor.user().profile.displayname}}}  )
-				console.log("Password reset!")
 				return "success";
 			}
 			return "Error: Not logged in";	
-		}
+		},
+		lookUpUsername:function(username) {
+			return Meteor.users.findOne({username:username});
+		},
+		getUsernameOf:function(id) {
+			return Meteor.users.findOne({_id:id}).username;
+		},
 	});
 
 
-	//Albums.remove({}); Comments.remove({}); Photos.remove({}); Meteor.users.remove({}); Messages.remove({});
+	//Albums.remove({}); Comments.remove({}); Photos.remove({}); Meteor.users.remove({}); Messages.remove({}); Notifications.remove({}); Contacts.remove({});
 	//Meteor.users.find().forEach(function(o){ console.log(o)});
 	//console.log("DONE")
   });
