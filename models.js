@@ -1,8 +1,18 @@
+/*News Model
+* _id
+* author_id
+* text
+* type ('photo' or 'album')
+* album_name (if type is 'album')
+* story
+* album_previous (if type is 'album')
+
+
 /*
 * Album Model
 * _id
 * ownerid = the userid  of the owner
-* album name
+* name
 * number of photos
 * album cover 
 */
@@ -50,7 +60,7 @@
 * username (of contact)
 */
 
-
+News = new Meteor.Collection("news");
 Albums = new Meteor.Collection("albums");
 Photos = new Meteor.Collection("photos");
 Comments = new Meteor.Collection("comments");

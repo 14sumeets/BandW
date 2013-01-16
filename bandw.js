@@ -24,6 +24,9 @@ if (Meteor.isClient) {
 		}
 		return "";
 	}
+	Template.userhomeheader.username = function() {
+		return Meteor.user().username;
+	}
 	Template.userhomeheader.numnewnotifications = function() {
 		var numnew = Notifications.find({owner_id:Meteor.userId(), new:true}).fetch().length
 		if (numnew > 0) {
@@ -75,8 +78,7 @@ if (Meteor.isClient) {
 				var n = Notifications.findOne({_id:e.toElement.id})
 				Notifications.update({_id:e.toElement.id},{$set: {accepted : true }}  )
 				Meteor.call('getUsernameOf',n.from_id,function(error,result) {
-					console.log("inserting")
-					console.log({owner_id: Meteor.userId(), username: result})
+					Notifications.insert({owner_id:n.from_id,text:Meteor.user().username+" has accepted your contact request.",new:true})
 					Contacts.insert({owner_id: Meteor.userId(), username: result});
 					Contacts.insert({owner_id: n.from_id, username: Meteor.user().username});
 				})
@@ -91,18 +93,21 @@ if (Meteor.isClient) {
 		return Photos.find({album_id: album._id})
 	}
 	Template.viewalbum.events({
-		'keydown, click button': function(e) {
+		'keydown, click button#newphoto': function(e) {
 			if ((e.which == 1 || (e.which == 13 && document.activeElement == $('.inputbox')[0])) && $('.inputbox')[0].value != "Enter a URL to a photo..." && $('.inputbox')[0].value != "") {
 				console.log("adding a new photo!")
 				var photoURL = $('.inputbox')[0].value;
-				$('.inputbox')[0].value = "Enter a URL to a photo...";
 				Photos.insert({album_id: Session.get('currentalbumid'), src: photoURL});
 				var prevNumPhotos = Albums.findOne({_id: Session.get('currentalbumid')}).numphotos;
 				console.log("previous number of photos: "+prevNumPhotos);
 				Albums.update({_id:Session.get('currentalbumid')},{$set: {numphotos : prevNumPhotos+1 }}  )
 				$('.inputbox')[0].blur()
-				console.log(photoURL)
+				$('.inputbox')[0].value = "Enter a URL to a photo..."
 			}
+		},
+		'click button#sharealbum' : function(e) {
+			News.insert({author_id:Meteor.user()._id,album_name:Albums.findOne({_id: Session.get('currentalbumid')}).name,text:"has posted a new album",type:"album",album_previews: Photos.find({album_id: Session.get('currentalbumid') }).fetch()   })
+			Session.set('loggedInPage','photostream')
 		},
 		'click img.photo': function(e) {
 			Session.set('loggedInPage','viewphoto')
@@ -143,15 +148,17 @@ if (Meteor.isClient) {
 		'click button' : function() {
 			var body = $("#messagebody").val();
 			var to = $("#messageto").val();
-			var recipient = Meteor.users.findOne({username: to })
-			if (recipient != undefined) {
-				$("#sendmessageerror").text("Successfully sent message!")
-				$("#messagebody").val("");
-				$("#messageto").val("");
-				Messages.insert({to_id: recipient._id, from_id: Meteor.user()._id, body:body, new:true})
-			} else {
-				$("#sendmessageerror").text("Error: Your specified recipient username was not found.")
-			}
+			Meteor.call('lookUpUsername',to,function(error,result){
+				var recipient = result
+				if (recipient != undefined) {
+					$("#sendmessageerror").text("Successfully sent message!")
+					$("#messagebody").val("");
+					$("#messageto").val("");
+					Messages.insert({to_id: recipient._id, from_id: Meteor.user()._id, body:body, new:true})
+				} else {
+					$("#sendmessageerror").text("Error: Your specified recipient username was not found.")
+				}
+			});
 		}
 	});
 	Template.viewinbox.messages = function() {
@@ -197,8 +204,33 @@ if (Meteor.isClient) {
 	Template.viewcontacts.contacts = function() {
 		return Contacts.find({owner_id:Meteor.userId()})
 	}
-	
-	
+	Template.photostream.news = function() {
+		var mycontacts = []
+		Contacts.find({username:Meteor.user().username}).forEach(function(c) {
+			mycontacts.push(c.owner_id)
+		})
+		mycontacts.push(Meteor.userId())
+		return News.find({author_id: {$in: mycontacts  }        }).fetch().reverse()
+	}
+	Template.photostream.events({
+		'click img.album_preview_image': function(e) {
+			Session.set('loggedInPage','viewphoto')
+			Session.set('currentPhoto',e.target.id)
+			Session.set('currentalbumid',e.target.attributes.getNamedItem('album_id').value)
+		}
+	})
+	Template.photostream.getuserprofpic = function(id) {
+		return Meteor.users.findOne({_id:id}).profile.profpic
+	}
+	Template.photostream.getuserdisplayname = function(id) {
+		return Meteor.users.findOne({_id:id}).profile.displayname
+	}
+	Template.photostream.typeisphoto = function(type) {
+		return type=="photo"
+	}
+	Template.photostream.typeisalbum = function(type) {
+		return type=="album"
+	}
 	
 	
 	
@@ -215,6 +247,9 @@ if (Meteor.isClient) {
 	
 	
 	Template.userhomeleftmenu.events({
+		'click li#photostream' : function() {
+			Session.set('loggedInPage','photostream')
+		},
 		'click li#seeall' : function() {
 			Session.set('loggedInPage','seeall')
 		},
@@ -292,7 +327,7 @@ if (Meteor.isClient) {
 			var options = {
 				username: username,
 				password: pw,
-				profile: {makepw: true, displayname: username}
+				profile: {makepw: true, displayname: username, profpic: '/profile-default.jpg'}
 			};
 			Accounts.createUser(options,function (err) {
 				console.log("Creating user...");
@@ -330,7 +365,7 @@ if (Meteor.isServer) {
 		resetPw: function(pw) {
 			if (Meteor.user() != null) {
 				Accounts.setPassword(Meteor.user()._id,pw);
-				Meteor.users.update({_id:Meteor.user()._id},{$set: {profile : {makepw:false, displayname: Meteor.user().profile.displayname}}}  )
+				Meteor.users.update({_id:Meteor.user()._id},{$set: {profile : {makepw:false, displayname: Meteor.user().profile.displayname, profpic: '/profile-default.jpg'}}}  )
 				return "success";
 			}
 			return "Error: Not logged in";	
@@ -344,7 +379,7 @@ if (Meteor.isServer) {
 	});
 
 
-	//Albums.remove({}); Comments.remove({}); Photos.remove({}); Meteor.users.remove({}); Messages.remove({}); Notifications.remove({}); Contacts.remove({});
+	//News.remove({}); Albums.remove({}); Comments.remove({}); Photos.remove({}); Meteor.users.remove({}); Messages.remove({}); Notifications.remove({}); Contacts.remove({});
 	//Meteor.users.find().forEach(function(o){ console.log(o)});
 	//console.log("DONE")
   });

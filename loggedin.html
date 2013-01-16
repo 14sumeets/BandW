@@ -38,6 +38,9 @@
 	{{#if loggedInPageIs "sendmessage"}}
 		{{> sendmessage }}
 	{{/if}}
+	{{#if loggedInPageIs "photostream"}}
+		{{> photostream }}
+	{{/if}}
 	</div>
 </template>
 <template name="userhomeheader">
@@ -64,6 +67,7 @@
 		   </ul>
 
 	      <form class="navbar-form pull-right">
+			<span style="position:relative; top:4px;">Welcome, {{username}}</span>
 	        <button class="btn btn-primary" id="logout">
 	          Sign out
 	        </button>
@@ -84,6 +88,13 @@
 	          </li>
 	          <li>
 	          </li>
+	
+	          <li class="" id="photostream">
+	            <a href="#">
+	              Photostream
+	            </a>
+	          </li>
+	
 	          <li class="" id="newalbum">
 	            <a href="#">
 	              New Album
@@ -201,7 +212,9 @@
 	        <div>
 	          <h2>
 	            Viewing Album: {{album.name}}</h2>Add a photo:<br><input type="text" id="newphotoURL" value="Enter a URL to a photo..." onfocus="setValue(this)" onblur="setValue(this)" class="inputbox">
-				<button type="button" id="newphoto" class="btn btn-primary" data-loading-text="Loading..." >Add</button><h5><span id="newalbumerror">
+				<button type="button" id="newphoto" class="btn btn-primary" data-loading-text="Loading..." >Add</button><h5><span id="newalbumerror"></span>
+				<button type="button" id="sharealbum" class="btn btn-primary" data-loading-text="Loading..." >Share Album</button>
+				<span id="sharealbumsuccess"></span></h5>
 	 			<hr style="clear:both">
 	          <br>
 				{{#each photosFrom album}}
@@ -281,6 +294,40 @@
 			<h5>Message:</h5> <textarea class="input-xlarge" id="messagebody" rows="5"></textarea>	<br>
 			<button type="button" id="sendmessage" class="btn btn-primary" data-loading-text="Loading..." >Send</button><div style="font-weight: bold; font-size: 12px;"  id="sendmessageerror"></div>
 	        </div>
+		</div>
+	</div>
+</template>
+<template name="photostream">
+	<div class="photostreamrightofmenu">
+		<div class="hero-unit">
+	    <div class="photostream">
+		{{#each news}}
+		<div class="photostreamnews">
+			<div class="news_left"><img src="{{getuserprofpic author_id}}" /></div>
+			<div class="news_right">
+				<div class="news_author"><b>{{getuserdisplayname author_id}}</b> {{text}} <b>{{album_name}}</b></div>
+					<div class="news_content">
+						{{#if typeisalbum type}}
+							<div class="album_preview">
+							{{#each album_previews}}
+								<a href="#"><img album_id="{{album_id}}" id="{{_id}}" class="album_preview_image" src="{{src}}"/></a>
+							{{/each}}
+							</div>
+						{{/if}}
+
+					</div>
+			</div>	
+		</div>
+		<hr>
+		{{/each}}
+
+		
+			
+			
+
+			
+		
+	    </div>
 		</div>
 	</div>
 </template>
