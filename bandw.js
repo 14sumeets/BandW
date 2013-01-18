@@ -106,7 +106,7 @@ if (Meteor.isClient) {
 			}
 		},
 		'click button#sharealbum' : function(e) {
-			News.insert({author_id:Meteor.user()._id,album_name:Albums.findOne({_id: Session.get('currentalbumid')}).name,text:"has posted a new album",type:"album",album_previews: Photos.find({album_id: Session.get('currentalbumid') }).fetch()   })
+			News.insert({author_id:Meteor.user()._id,album_name:Albums.findOne({_id: Session.get('currentalbumid')}).name,text:"has posted a new album",type:"album",album_id:Session.get('currentalbumid') })
 			Session.set('loggedInPage','photostream')
 		},
 		'click img.photo': function(e) {
@@ -216,6 +216,7 @@ if (Meteor.isClient) {
 		'click img.album_preview_image': function(e) {
 			Session.set('loggedInPage','viewphoto')
 			Session.set('currentPhoto',e.target.id)
+			console.log(e.target.attributes.getNamedItem('album_id').value)
 			Session.set('currentalbumid',e.target.attributes.getNamedItem('album_id').value)
 		}
 	})
@@ -231,7 +232,9 @@ if (Meteor.isClient) {
 	Template.photostream.typeisalbum = function(type) {
 		return type=="album"
 	}
-	
+	Template.photostream.previewphotosfrom = function(albumid) {
+		return Photos.find({album_id: albumid }).fetch()  //look for boolean "use_as_preview"
+	}
 	
 	
 	Template.seeall.events({
@@ -312,6 +315,7 @@ if (Meteor.isClient) {
 	Template.userhomeheader.events({
 		'click button#logout': function () {
 			Meteor.logout();
+			Accounts._makeClientLoggedOut()
 		}
 	});
 	Template.welcomeuser.needtomakepw = function() {

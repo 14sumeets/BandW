@@ -4,8 +4,8 @@
 * text
 * type ('photo' or 'album')
 * album_name (if type is 'album')
+* album_id (if type is 'album')
 * story
-* album_previous (if type is 'album')
 
 
 /*

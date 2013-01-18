@@ -102,7 +102,7 @@
 	          </li>
 	          <li class="" id="seeall">
 	            <a href="#">
-	              See all Albums
+	              All Albums
 	            </a>
 	          </li>
 	        </ul>
@@ -309,7 +309,7 @@
 					<div class="news_content">
 						{{#if typeisalbum type}}
 							<div class="album_preview">
-							{{#each album_previews}}
+							{{#each previewphotosfrom album_id}}
 								<a href="#"><img album_id="{{album_id}}" id="{{_id}}" class="album_preview_image" src="{{src}}"/></a>
 							{{/each}}
 							</div>
