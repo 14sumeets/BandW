@@ -106,7 +106,7 @@ if (Meteor.isClient) {
 			}
 		},
 		'click button#sharealbum' : function(e) {
-			News.insert({author_id:Meteor.user()._id,album_name:Albums.findOne({_id: Session.get('currentalbumid')}).name,text:"has posted a new album",type:"album",album_id:Session.get('currentalbumid') })
+			News.insert({author_id:Meteor.user()._id,album_name:Albums.findOne({_id: Session.get('currentalbumid')}).name,text:"posted a new album",type:"album",album_id:Session.get('currentalbumid') })
 			Session.set('loggedInPage','photostream')
 		},
 		'click img.photo': function(e) {
@@ -141,7 +141,12 @@ if (Meteor.isClient) {
 			$("#updatecover").text("Updated!")
 			$("#updatecover").fadeOut(1500)
 			Albums.update({_id:Session.get('currentalbumid')},{$set: {albumcover : Photos.findOne({_id:Session.get('currentPhoto')}).src }}  )
+		},
+		'click a#photostreamphoto':function(e) {
+			News.insert({author_id:Meteor.user()._id,album_name:Albums.findOne({_id: Session.get('currentalbumid')}).name,text:"shared a photo from the album",type:"photo",album_id:Session.get('currentalbumid'),photo_src:$('#photostreamphoto').attr('photosrc'),photo_id:Session.get('currentPhoto') })
+			Session.set('loggedInPage','photostream')
 		}
+	
 	});
 	
 	Template.sendmessage.events({
@@ -213,7 +218,15 @@ if (Meteor.isClient) {
 		return News.find({author_id: {$in: mycontacts  }        }).fetch().reverse()
 	}
 	Template.photostream.events({
+		'click img.photostream_photo': function(e) {
+			console.log(e)
+			Session.set('loggedInPage','viewphoto')
+			Session.set('currentPhoto',e.target.id)
+			console.log(e.target.attributes.getNamedItem('album_id').value)
+			Session.set('currentalbumid',e.target.attributes.getNamedItem('album_id').value)
+		},
 		'click img.album_preview_image': function(e) {
+			console.log(e)
 			Session.set('loggedInPage','viewphoto')
 			Session.set('currentPhoto',e.target.id)
 			console.log(e.target.attributes.getNamedItem('album_id').value)

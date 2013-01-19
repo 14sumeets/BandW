@@ -136,3 +136,7 @@ img.center {   display: block;   margin-left: auto;   margin-right: auto; }
 	width:200px;
 	padding-right: 4px;
 }
+.photostream_photo {
+	height:300px;
+	width:300px;
+}

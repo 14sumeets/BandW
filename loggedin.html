@@ -239,6 +239,9 @@
 			<a class="btn btn-primary" href="#" id="makealbumcover">
 		          Use photo as album cover
 		        </a><span style="position: absolute;"><span style="font-weight: bold; font-size: 12px; left:10px; position: relative;" id="updatecover"></span></span>    <br>
+				<a class="btn btn-primary" href="#" id="photostreamphoto" photosrc="{{photo.src}}">
+			          Post on photostream
+			        </a>   <br>
 			<h4>Comments</h4><hr>
 			  {{#each comments}}
 				<b>{{commentauthorname author_id}}</b>: {{text}} <br>
@@ -313,6 +316,9 @@
 								<a href="#"><img album_id="{{album_id}}" id="{{_id}}" class="album_preview_image" src="{{src}}"/></a>
 							{{/each}}
 							</div>
+						{{/if}}
+						{{#if typeisphoto type}}
+							<a href="#"><img album_id="{{album_id}}" id="{{photo_id}}" class="photostream_photo" src="{{photo_src}}"/></a>
 						{{/if}}
 
 					</div>
